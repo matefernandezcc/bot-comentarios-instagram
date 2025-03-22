@@ -48,8 +48,10 @@ If (cuentas != "") {
     Click left
     Sleep 500
     SendInput %mensaje%
-    Send %mensaje%       ; Enviar el mensaje con Send (más lento que SendInput)
-    Send {Enter}         ; Enviar Enter con Send
+    Sleep 500
+    SendInput {Enter}         ; Enviar Enter con Send
+    Sleep 500  ; Esperar medio segundo antes de hacer clic
+    MouseClick, left, 1409, 958  ; Hacer clic en el botón de publicar
 
     contadorComentariosHechos++  ; Incrementar el contador de comentarios hechos
     totalComentarios++  ; Incrementar el total de comentarios
