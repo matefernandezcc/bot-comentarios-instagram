@@ -22,6 +22,7 @@ En el archivo cuentas hay que poner el listado de cuentas que el bot puede menci
 ...
 @CuentaN
 ```
+El archivo chances.txt lo creas pero lo dejas vacío (El script lo va a ir modificando)
 
 ### ¿Cómo usar?
 1) Tenes que ya tener iniciada su sesión de instagram en la cuenta que vas a usar (Desde el navegador de una compu)
