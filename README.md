@@ -1,4 +1,4 @@
-<img alt="Logo Autohotkey" src="https://i.imgur.com/tjPOPhB.png" width="500" height="500" />
+[<img src="[image.png](https://i.imgur.com/tjPOPhB.png)" width="250"/>](https://i.imgur.com/tjPOPhB.png)
 # Bot para comentarios de Instagram
     Bot hecho con Autohotkey para comentar y participar en sorteos que pidan mencionar gente
 
