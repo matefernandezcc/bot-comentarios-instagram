@@ -4,7 +4,7 @@ EnvGet, userProfile, USERPROFILE
 SetWorkingDir, %A_ScriptDir%
 
 ; Configuración global
-global contadorComentariosHechos := 55 ; Comentarios YA hechos
+global contadorComentariosHechos := 74 ; Comentarios YA hechos
 global limiteDiario := 100 ; Comentarios max que hace el script
 global cantMenciones := 1 ; Cuantas cuentas mencionar por comentario
 global intervaloMinutos, intervaloSegundos, intervalo
@@ -31,9 +31,17 @@ If (cuentas != "") {
     emoji := SeleccionarEmoji()
     frase := SeleccionarFrase()
 
+    ; Decidir si se omite el emoji o la frase (al azar)
+    If (RandomDecision(50))  ; Probabilidad de 50% de omitir el emoji
+        emoji := ""
+    
+    If (RandomDecision(50))  ; Probabilidad de 50% de omitir la frase
+        frase := ""
+
     ; Generar el mensaje con las cuentas seleccionadas
     mensaje := cuentas " " frase " " emoji 
-    
+    mensaje := Trim(mensaje) ; Eliminar posibles espacios extra
+
     ; Enviar el mensaje en la ventana activa
     WinActivate, ahk_exe opera.exe
     WinWaitActive, ahk_exe opera.exe,, 3
@@ -90,6 +98,7 @@ GuardarChances(comentariosHechos, probabilidad) {
     FileAppend, chances=%probabilidad%`%`n, %filePath%  ; Guardar la probabilidad con el signo %
 }
 
+; Función para seleccionar cuentas aleatorias del archivo
 SeleccionarCuentas(filePath) {
     If !FileExist(filePath) {
         MsgBox, No existe el archivo: %filePath%
@@ -119,14 +128,22 @@ SeleccionarCuentas(filePath) {
     return Trim(cuentas)
 }
 
+; Función para seleccionar un emoji aleatorio
 SeleccionarEmoji() {
     emojis := ["😊", "🔥", "🎉", "✨", "😎", "🙌", "👍", "🥳"]
     Random, index, 1, % emojis.MaxIndex()
     return emojis[index]
 }
 
+; Función para seleccionar una frase aleatoria
 SeleccionarFrase() {
-    frases := ["suerte", "a ver que sale", "suertee", "xd"]
+    frases := ["veremos", "suerte", "a ver que sale", "suertee", "xd", "ojala", "bueno", "esperemos", "esperemos que si", "espero ganar", "ojala ganar"]
     Random, index, 1, % frases.MaxIndex()
     return frases[index]
+}
+
+; Función para decidir si omitir un elemento con una probabilidad
+RandomDecision(probabilidad) {
+    Random, decision, 1, 100
+    return decision <= probabilidad
 }
