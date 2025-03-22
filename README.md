@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/tjPOPhB.png" width="300" style="display: block; margin-left: auto; margin-right: auto;" />
+<p align="center"><img src="https://i.imgur.com/tjPOPhB.png" width="250" /></p>
 # Bot para comentarios de Instagram
     Bot hecho con Autohotkey para comentar y participar en sorteos que pidan mencionar gente
 
