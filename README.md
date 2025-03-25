@@ -46,3 +46,6 @@ El archivo chances.txt lo creas pero lo dejas vacío (El script lo va a ir modif
 
 ⚠ Si queres mencionar más de una cuenta por comentario poder modificar las variables de Config dentro del [Script](./sorteos.ahk) 
 
+4) La version para múltiples cuentas la uso con la extensión [SessionBox](https://sessionbox.io) que te deja tener varias cuentas logueadas en una por cada pestaña del navegador.
+
+    Para usarla deja cada cuenta ya preparada para comentar (de la misma forma que lo harias con una sola cuenta) pero ahora varias, **una vez que el script detecta que no se puede comentar más en la cuenta actual cambia de pestaña y sigue con la siguiente cuenta. 🤖**
