@@ -44,7 +44,8 @@ El archivo chances.txt lo creas pero lo dejas vacío (El script lo va a ir modif
     ```
     ![Windows Run](./assets/run.jpg)
 
-[!WARNING] Si queres mencionar más de una cuenta por comentario poder modificar las variables de Config dentro del [Script](./sorteos.ahk) 
+> [!WARNING]
+> Si queres mencionar más de una cuenta por comentario poder modificar las variables de Config dentro del [Script](./sorteos.ahk) 
 
 4) La version para múltiples cuentas la uso con la extensión [SessionBox](https://sessionbox.io) que te deja tener varias cuentas logueadas en una por cada pestaña del navegador.
 
