@@ -3,46 +3,56 @@ CoordMode, Mouse, Screen
 EnvGet, userProfile, USERPROFILE
 SetWorkingDir, %A_ScriptDir%
 
-; Configuración global
-global contadorComentariosHechos := 74 ; Comentarios YA hechos
-global limiteDiario := 100 ; Comentarios max que hace el script
-global cantMenciones := 1 ; Cuantas cuentas mencionar por comentario
+; ///////////////////////////////////////// Variables de config globales /////////////////////////////////////////
+global contadorComentariosHechos := 139 ; Comentarios YA hechos
+global limiteDiario := 500 ; Cantidad máxima de comentarios a enviar
+global cantMenciones := 2 ; Cantidad de cuentas a mecionar por comentario
 global intervaloMinutos, intervaloSegundos, intervalo
-global totalComentarios := 40900 ; Comentarios totales de la publicacion
+global totalComentarios := 6588 ; Cantidad de comentarios totales que tiene la publicación
+global tiempoRestante := 0
+global timerActivo := false
 
-; ///////////////////////////// Intervalo random entre comentarios ///////////////////////////// 
+; ///////////////////////////////////////// Crear GUI una vez /////////////////////////////////////////
+Gui, TimerGUI:+AlwaysOnTop -Caption +ToolWindow
+Gui, TimerGUI:Font, s14 Bold, Segoe UI
+Gui, TimerGUI:Add, Text, vTiempoRestanteText w200 Center, Esperando...
+Gui, TimerGUI:Show, x10 y10 NoActivate, Timer Visual
+
+
+; ///////////////////////////////////////// Set del Timer random /////////////////////////////////////////
 Comenzar:
-    Random, intervaloMinutos, 1, 4 ; entre 1 y 4 minutos
-    Random, intervaloSegundos, 0, 59 ; entre 0 y 59 segundos
-    intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000 ; convertir a milisegundos
-    SetTimer, Comentar, %intervalo%  ; Establecer el temporizador solo una vez
+    Random, intervaloMinutos, 3, 7
+    Random, intervaloSegundos, 0, 59
+    intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000
+    tiempoRestante := intervalo // 1000
+    timerActivo := true
+    GuiControl, TimerGUI:, TiempoRestanteText, Restante: %tiempoRestante%s
+    SetTimer, ActualizarTimerVisual, 1000
+    SetTimer, Comentar, %intervalo%
 Return
 
 Comentar:
 if (contadorComentariosHechos >= limiteDiario) {
     TrayTip, AutoHotkey, Límite diario alcanzado (%limiteDiario% comentarios), 5
-    SetTimer, Comentar, Off  ; Detener el temporizador si se alcanza el límite
+    SetTimer, Comentar, Off
+    SetTimer, ActualizarTimerVisual, Off
+    GuiControl, TimerGUI:, TiempoRestanteText, Límite alcanzado!
     Return
 }
 
-; ///////////////////////////// Leer cuentas del archivo /////////////////////////////
+; ///////////////////////////////////////// Creación del mensaje /////////////////////////////////////////
 cuentas := SeleccionarCuentas(A_ScriptDir . "\cuentas.txt")
 If (cuentas != "") {
     emoji := SeleccionarEmoji()
     frase := SeleccionarFrase()
-
-    ; Decidir si se omite el emoji o la frase (al azar)
-    If (RandomDecision(50))  ; Probabilidad de 50% de omitir el emoji
+    If (RandomDecision(50)) ; chance de no poner emoji
         emoji := ""
-    
-    If (RandomDecision(50))  ; Probabilidad de 50% de omitir la frase
+    If (RandomDecision(50)) ; chance de no poner frase
         frase := ""
 
-    ; Generar el mensaje con las cuentas seleccionadas
     mensaje := cuentas " " frase " " emoji 
-    mensaje := Trim(mensaje) ; Eliminar posibles espacios extra
+    mensaje := Trim(mensaje)
 
-    ; Enviar el mensaje en la ventana activa
     WinActivate, ahk_exe opera.exe
     WinWaitActive, ahk_exe opera.exe,, 3
     If !WinActive("ahk_exe opera.exe") {
@@ -51,76 +61,79 @@ If (cuentas != "") {
     }
 
     Sleep 500
-    MouseMove, 1146, 956
+    MouseMove, 980, 960 ; Coords del input text
     Sleep 200
     Click left
     Sleep 500
-    SendInput %mensaje%
+    SendInput %mensaje% ; Enviar Mensaje 
     Sleep 500
-    SendInput {Enter}         ; Enviar Enter con Send
-    Sleep 500  ; Esperar medio segundo antes de hacer clic
-    MouseClick, left, 1409, 958  ; Hacer clic en el botón de publicar
+    SendInput {Enter}
+    Sleep 500
+    MouseClick, left, 1305, 964 ; Coords del boton publicar y publicación del comentario
 
-    contadorComentariosHechos++  ; Incrementar el contador de comentarios hechos
-    totalComentarios++  ; Incrementar el total de comentarios
-
+    contadorComentariosHechos++
+    totalComentarios++
     TrayTip, AutoHotkey, Comentario enviado (#%contadorComentariosHechos%): %mensaje%, 3
-    
-    ; Calcular la probabilidad
+
     probabilidad := CalcularProbabilidad(contadorComentariosHechos, totalComentarios)
-    
-    ; Guardar en el archivo chances.txt
     GuardarChances(contadorComentariosHechos, probabilidad)
-    
-    ; Calcular el nuevo intervalo para el siguiente comentario
-    Random, intervaloMinutos, 2, 5 ; entre 2 y 5 minutos
-    Random, intervaloSegundos, 0, 59 ; entre 0 y 59 segundos
-    intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000 ; convertir a milisegundos
-    SetTimer, Comentar, %intervalo%  ; Reiniciar el temporizador con el nuevo intervalo
+
+    Random, intervaloMinutos, 2, 5
+    Random, intervaloSegundos, 0, 59
+    intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000
+    tiempoRestante := intervalo // 1000
+    timerActivo := true
+    GuiControl, TimerGUI:, TiempoRestanteText, Restante: %tiempoRestante%s
+    SetTimer, ActualizarTimerVisual, 1000
+    SetTimer, Comentar, %intervalo%
 } else {
     MsgBox, No se seleccionaron cuentas
 }
 Return
 
-; ///////////////////////////// Funciones /////////////////////////////
+ActualizarTimerVisual:
+if (timerActivo) {
+    tiempoRestante--
+    if (tiempoRestante < 0) {
+        tiempoRestante := 0
+        timerActivo := false
+        GuiControl, TimerGUI:, TiempoRestanteText, Enviando...
+    } else {
+        GuiControl, TimerGUI:, TiempoRestanteText, Restante: %tiempoRestante%s
+    }
+}
+Return
 
-; Función para calcular la probabilidad
+; ///////////////////////////////////////// Funciones auxiliares /////////////////////////////////////////
 CalcularProbabilidad(comentariosHechos, totalComentarios) {
     probabilidad := (comentariosHechos / totalComentarios) * 100
     return probabilidad
 }
 
-; Función para guardar los datos en chances.txt
 GuardarChances(comentariosHechos, probabilidad) {
     filePath := A_ScriptDir . "\chances.txt"
-    FileAppend, comentarios_totales=%totalComentarios%`n, %filePath%  ; Usar la variable global totalComentarios
+    FileAppend, comentarios_totales=%totalComentarios%`n, %filePath%
     FileAppend, comentarios_hechos=%comentariosHechos%`n, %filePath%
-    FileAppend, chances=%probabilidad%`%`n, %filePath%  ; Guardar la probabilidad con el signo %
+    FileAppend, chances=%probabilidad%`%`n, %filePath%
 }
 
-; Función para seleccionar cuentas aleatorias del archivo
 SeleccionarCuentas(filePath) {
     If !FileExist(filePath) {
         MsgBox, No existe el archivo: %filePath%
         return ""
     }
     FileRead, contenido, %filePath%
-    
-    ; Filtrar líneas vacías
     lineas := []
     Loop, Parse, contenido, `n, `r
     {
-        If (A_LoopField != "")  ; Solo agregar si la línea no está vacía
+        If (A_LoopField != "")
             lineas.push(A_LoopField)
     }
-
     If (lineas.MaxIndex() < 1) {
         MsgBox, El archivo está vacío
         return ""
     }
-    
     cuentas := ""
-    ; Seleccionar las cuentas según el valor de cantMenciones
     Loop, %cantMenciones% {
         Random, randomIndex, 1, % lineas.MaxIndex()
         cuentas .= Trim(lineas[randomIndex]) . " "
@@ -128,21 +141,18 @@ SeleccionarCuentas(filePath) {
     return Trim(cuentas)
 }
 
-; Función para seleccionar un emoji aleatorio
 SeleccionarEmoji() {
     emojis := ["😊", "🔥", "🎉", "✨", "😎", "🙌", "👍", "🥳"]
     Random, index, 1, % emojis.MaxIndex()
     return emojis[index]
 }
 
-; Función para seleccionar una frase aleatoria
 SeleccionarFrase() {
-    frases := ["veremos", "suerte", "a ver que sale", "suertee", "xd", "ojala", "bueno", "esperemos", "esperemos que si", "espero ganar", "ojala ganar"]
+    frases := ["veremos","suerte","a ver que sale","suertee","xd","ojala","bueno","ojala ganarlo","messirve","buenisimoo","esperemos","esperemos que si", "espero ganar", "ojala ganar"]
     Random, index, 1, % frases.MaxIndex()
     return frases[index]
 }
 
-; Función para decidir si omitir un elemento con una probabilidad
 RandomDecision(probabilidad) {
     Random, decision, 1, 100
     return decision <= probabilidad
