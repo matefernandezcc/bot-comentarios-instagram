@@ -1,6 +1,7 @@
-![Autohotkey](https://i.imgur.com/tjPOPhB.png)
+<p align="center"><img src="https://i.imgur.com/tjPOPhB.png" width="300" /></p>
+
 # Bot para comentarios de Instagram
-    Bot hecho con Autohotkey para comentar y participar en sorteos que pidan mencionar gente
+Bot hecho con Autohotkey para comentar y participar en sorteos que pidan mencionar gente
 
 ### Requsitos
 - Autohotkey
@@ -22,6 +23,7 @@ En el archivo cuentas hay que poner el listado de cuentas que el bot puede menci
 ...
 @CuentaN
 ```
+El archivo chances.txt lo creas pero lo dejas vacío (El script lo va a ir modificando)
 
 ### ¿Cómo usar?
 1) Tenes que ya tener iniciada su sesión de instagram en la cuenta que vas a usar (Desde el navegador de una compu)
