@@ -4,29 +4,32 @@ EnvGet, userProfile, USERPROFILE
 SetWorkingDir, %A_ScriptDir%
 
 ; ///////////////////////////////////////// Variables de config globales /////////////////////////////////////////
-global contadorComentariosHechos := 167 ; Comentarios YA hechos
+global url := "PC-Gamer-1" ; URL / nombre del sorteo actual
+global contadorComentariosHechos := 218 ; Comentarios YA hechos
 global limiteDiario := 500 ; Cantidad máxima de comentarios a enviar
 global cantMenciones := 2 ; Cantidad de cuentas a mecionar por comentario
 global intervaloMinutos, intervaloSegundos, intervalo
-global totalComentarios := 6722 ; Cantidad de comentarios totales que tiene la publicación
+global totalComentarios := 7033 ; Cantidad de comentarios totales que tiene la publicación
 global tiempoRestante := 0
 global timerActivo := false
+global penalizacion := 0 ; Tiempo sumado por cada vez que te bloquean acciones (en minutos)
 
 ; ///////////////////////////////////////// Crear GUI una vez /////////////////////////////////////////
 Gui, TimerGUI:+AlwaysOnTop -Caption +ToolWindow
 Gui, TimerGUI:Font, s14 Bold, Segoe UI
 Gui, TimerGUI:Add, Text, vTiempoRestanteText w200 Center, Esperando...
-Gui, TimerGUI:Show, x10 y10 NoActivate, Timer Visual
-
+Gui, TimerGUI:Add, Text, vPenalizacionText w200 Center, Penalización: 0m
+Gui, TimerGUI:Show, x40 y75 NoActivate, Timer Visual
 
 ; ///////////////////////////////////////// Set del Timer Inicial /////////////////////////////////////////
 Comenzar:
     Random, intervaloMinutos, 2, 4 ; Entre x e y minutos
     Random, intervaloSegundos, 0, 59
-    intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000
+    intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000 + penalizacion * 60000
     tiempoRestante := intervalo // 1000
     timerActivo := true
     GuiControl, TimerGUI:, TiempoRestanteText, Restante: %tiempoRestante%s
+    GuiControl, TimerGUI:, PenalizacionText, Penalización: %penalizacion%m
     SetTimer, ActualizarTimerVisual, 1000
     SetTimer, Comentar, %intervalo%
 Return
@@ -72,8 +75,6 @@ If (cuentas != "") {
     MouseClick, left, 1300, 960 ; Coords del boton publicar y publicación del comentario
     Sleep 2000
     DetectarPopup()
-    ;DetectarPopup_Img()
-
 
     contadorComentariosHechos++
     totalComentarios++
@@ -85,10 +86,11 @@ If (cuentas != "") {
     ; /////////////////////// Nuevo timer random ///////////////////////
     Random, intervaloMinutos, 4, 5 
     Random, intervaloSegundos, 0, 59
-    intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000
+    intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000 + penalizacion * 60000
     tiempoRestante := intervalo // 1000
     timerActivo := true
     GuiControl, TimerGUI:, TiempoRestanteText, Restante: %tiempoRestante%s
+    GuiControl, TimerGUI:, PenalizacionText, Penalización: %penalizacion%m
     SetTimer, ActualizarTimerVisual, 1000
     SetTimer, Comentar, %intervalo%
 } else {
@@ -117,9 +119,11 @@ CalcularProbabilidad(comentariosHechos, totalComentarios) {
 
 GuardarChances(comentariosHechos, probabilidad) {
     filePath := A_ScriptDir . "\chances.txt"
-    FileAppend, comentarios_totales=%totalComentarios%`n, %filePath%
-    FileAppend, comentarios_hechos=%comentariosHechos%`n, %filePath%
-    FileAppend, chances=%probabilidad%`%`n, %filePath%
+    FileAppend, Sorteo=%url%`n, %filePath% ;
+    FileAppend, Comentarios hechos=%comentariosHechos%`n, %filePath%
+    FileAppend, Comentarios totales=%totalComentarios%`n, %filePath%
+    FileAppend, probabilidad=%probabilidad%`%`n, %filePath%
+    FileAppend, `n, %filePath%
 }
 
 SeleccionarCuentas(filePath) {
@@ -147,13 +151,13 @@ SeleccionarCuentas(filePath) {
 }
 
 SeleccionarEmoji() {
-    emojis := ["😊", "🔥", "🎉", "✨", "😎", "🙌", "👍", "🥳", 😇]
+    emojis := ["😊", "🔥", "🎉", "✨", "😎", "🙌", "👍", "🥳", "😇", "😍", "🤩", "🎯", "💥", "😜", "🤗", "💪", "🤞", "🌟", "🌈", "💖", "💫", "😝", "🌻", "💬", "🙈", "💥", "🍀"]
     Random, index, 1, % emojis.MaxIndex()
     return emojis[index]
 }
 
 SeleccionarFrase() {
-    frases := ["veremos","suerte","exitos","ganare?","quiero ganar","a ver si gano un sorteo","a ver que sale","suertee","xd","ojala","bueno","ojala ganarlo","messirve","buenisimoo","esperemos","esperemos que si", "espero ganar", "ojala ganar"]
+    frases := ["veremos", "suerte", "exitos", "ganare?", "quiero ganar", "a ver si gano un sorteo", "a ver que sale", "suertee", "xd", "ojala", "bueno", "ojala ganarlo", "messirve", "buenisimoo", "esperemos", "esperemos que si", "espero ganar", "ojala ganar", "seria genial", "deseando ganar", "este es mi momento", "crucemos los dedos", "si lo gano, ¡genial!", "todo por un sorteo", "a ganar", "me gustaría mucho", "vamos a ver", "tengo fe"]
     Random, index, 1, % frases.MaxIndex()
     return frases[index]
 }
@@ -173,7 +177,8 @@ DetectarPopup() {
     ; Buscar el color dentro del área definida (0x0095F6 es el color RGB 0, 149, 246)
     PixelSearch, foundX, foundY, X1, Y1, X2, Y2, 0x22333F, 10, Fast RGB
     if (ErrorLevel = 0) {
-        TrayTip, Popup Detectado, Cerrando pestaña (Ctrl+W), 2
+        TrayTip, Popup Detectado, Cambiando de cuenta, 2
+        penalizacion := penalizacion + 5
         Send, ^{Tab}
         return true
     }
