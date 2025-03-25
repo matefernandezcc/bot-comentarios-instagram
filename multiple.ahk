@@ -5,11 +5,11 @@ SetWorkingDir, %A_ScriptDir%
 
 ; ///////////////////////////////////////// Variables de config globales /////////////////////////////////////////
 global url := "PC-Gamer-1" ; URL / nombre del sorteo actual
-global contadorComentariosHechos := 218 ; Comentarios YA hechos
+global contadorComentariosHechos := 283 ; Comentarios YA hechos
 global limiteDiario := 500 ; Cantidad máxima de comentarios a enviar
 global cantMenciones := 2 ; Cantidad de cuentas a mecionar por comentario
 global intervaloMinutos, intervaloSegundos, intervalo
-global totalComentarios := 7033 ; Cantidad de comentarios totales que tiene la publicación
+global totalComentarios := 7664 ; Cantidad de comentarios totales que tiene la publicación
 global tiempoRestante := 0
 global timerActivo := false
 global penalizacion := 0 ; Tiempo sumado por cada vez que te bloquean acciones (en minutos)
@@ -23,7 +23,7 @@ Gui, TimerGUI:Show, x40 y75 NoActivate, Timer Visual
 
 ; ///////////////////////////////////////// Set del Timer Inicial /////////////////////////////////////////
 Comenzar:
-    Random, intervaloMinutos, 2, 4 ; Entre x e y minutos
+    Random, intervaloMinutos, 2, 3 ; Entre x e y minutos
     Random, intervaloSegundos, 0, 59
     intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000 + penalizacion * 60000
     tiempoRestante := intervalo // 1000
@@ -119,6 +119,9 @@ CalcularProbabilidad(comentariosHechos, totalComentarios) {
 
 GuardarChances(comentariosHechos, probabilidad) {
     filePath := A_ScriptDir . "\chances.txt"
+    FormatTime, fechaHora, %A_Now%, dd-MM HH:mm
+
+    FileAppend, Fecha=%fechaHora%`n, %filePath%
     FileAppend, Sorteo=%url%`n, %filePath% ;
     FileAppend, Comentarios hechos=%comentariosHechos%`n, %filePath%
     FileAppend, Comentarios totales=%totalComentarios%`n, %filePath%
@@ -168,19 +171,39 @@ RandomDecision(probabilidad) {
 }
 
 DetectarPopup() {
-    ; Área donde aparece el popup de bloqueado
+    ; Primera área donde puede aparecer el popup
     X1 := 720
     Y1 := 580
     X2 := 950
     Y2 := 625
 
-    ; Buscar el color dentro del área definida (0x0095F6 es el color RGB 0, 149, 246)
-    PixelSearch, foundX, foundY, X1, Y1, X2, Y2, 0x22333F, 10, Fast RGB
+    ; Segunda área donde también podría aparecer el popup
+    X3 := 1554
+    Y3 := 966
+    X4 := 1656
+    Y4 := 1001
+
+    ; Color a buscar
+    colorBuscar1 := 0x22333F
+    colorBuscar2 := 0xC3D1DD 
+
+    ; Buscar en la primera área
+    PixelSearch, foundX, foundY, X1, Y1, X2, Y2, colorBuscar1, 10, Fast RGB
     if (ErrorLevel = 0) {
-        TrayTip, Popup Detectado, Cambiando de cuenta, 2
+        TrayTip, Popup Detectado, Cambiando de cuenta (Área 1), 2
         penalizacion := penalizacion + 5
         Send, ^{Tab}
         return true
     }
+
+    ; Buscar en la segunda área
+    PixelSearch, foundX, foundY, X3, Y3, X4, Y4, colorBuscar2, 10, Fast RGB
+    if (ErrorLevel = 0) {
+        TrayTip, Popup Detectado, Cambiando de cuenta (Área 2), 2
+        penalizacion := penalizacion + 5
+        Send, ^{Tab}
+        return true
+    }
+
     return false
 }
