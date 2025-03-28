@@ -4,12 +4,12 @@ EnvGet, userProfile, USERPROFILE
 SetWorkingDir, %A_ScriptDir%
 
 ; ///////////////////////////////////////// Variables de config globales /////////////////////////////////////////
-global url := "PC-Gamer-1" ; URL / nombre del sorteo actual
-global contadorComentariosHechos := 283 ; Comentarios YA hechos
+global url := "PC-Gamer-2" ; URL / nombre del sorteo actual
+global contadorComentariosHechos := 0 ; Comentarios YA hechos
 global limiteDiario := 500 ; Cantidad máxima de comentarios a enviar
 global cantMenciones := 2 ; Cantidad de cuentas a mecionar por comentario
 global intervaloMinutos, intervaloSegundos, intervalo
-global totalComentarios := 7664 ; Cantidad de comentarios totales que tiene la publicación
+global totalComentarios := 6567 ; Cantidad de comentarios totales que tiene la publicación
 global tiempoRestante := 0
 global timerActivo := false
 global penalizacion := 0 ; Tiempo sumado por cada vez que te bloquean acciones (en minutos)
@@ -64,7 +64,7 @@ If (cuentas != "") {
     }
 
     Sleep 500
-    MouseMove, 980, 960 ; Coords del input text
+    MouseMove, 1254, 960 ; Coords del input text
     Sleep 200
     Click left
     Sleep 500
@@ -72,7 +72,7 @@ If (cuentas != "") {
     Sleep 500
     SendInput {Enter}
     Sleep 500
-    MouseClick, left, 1300, 960 ; Coords del boton publicar y publicación del comentario
+    MouseClick, left, 1490, 961 ; Coords del boton publicar y publicación del comentario
     Sleep 2000
     DetectarPopup()
 
