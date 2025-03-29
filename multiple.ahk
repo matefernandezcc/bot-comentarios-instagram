@@ -73,8 +73,10 @@ If (cuentas != "") {
     SendInput {Enter}
     Sleep 500
     MouseClick, left, 1487, 954 ; Coords del boton publicar y publicación del comentario
-    Sleep 2000
-    DetectarPopup()
+    Sleep 1000
+    DetectarPopup1()
+    Sleep 500
+    DetectarPopup2()
 
     contadorComentariosHechos++
     totalComentarios++
@@ -170,22 +172,15 @@ RandomDecision(probabilidad) {
     return decision <= probabilidad
 }
 
-DetectarPopup() {
+DetectarPopup1() {
     ; Primera área donde puede aparecer el popup
     X1 := 720
     Y1 := 580
     X2 := 950
     Y2 := 625
 
-    ; Segunda área donde también podría aparecer el popup
-    X3 := 1570
-    Y3 := 972
-    X4 := 1655
-    Y4 := 1000
-
     ; Color a buscar
     colorBuscar1 := 0x22333F
-    colorBuscar2 := 0xE0F1FF
 
     ; Buscar en la primera área
     PixelSearch, foundX, foundY, X1, Y1, X2, Y2, colorBuscar1, 1, Fast RGB
@@ -195,6 +190,18 @@ DetectarPopup() {
         Send, ^{Tab}
         return true
     }
+    return false
+}
+
+DetectarPopup2() {
+    ; Segunda área donde también podría aparecer el popup
+    X3 := 1570
+    Y3 := 972
+    X4 := 1655
+    Y4 := 1000
+
+    ; Color a buscar
+    colorBuscar2 := 0xE0F1FF
 
     ; Buscar en la segunda área
     PixelSearch, foundX, foundY, X3, Y3, X4, Y4, colorBuscar2, 1, Fast RGB
@@ -204,6 +211,5 @@ DetectarPopup() {
         Send, ^{Tab}
         return true
     }
-
     return false
 }
