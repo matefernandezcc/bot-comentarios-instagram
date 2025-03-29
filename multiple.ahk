@@ -5,11 +5,11 @@ SetWorkingDir, %A_ScriptDir%
 
 ; ///////////////////////////////////////// Variables de config globales /////////////////////////////////////////
 global url := "PC-Gamer-2" ; URL / nombre del sorteo actual
-global contadorComentariosHechos := 0 ; Comentarios YA hechos
+global contadorComentariosHechos := 4 ; Comentarios YA hechos
 global limiteDiario := 500 ; Cantidad máxima de comentarios a enviar
-global cantMenciones := 2 ; Cantidad de cuentas a mecionar por comentario
+global cantMenciones := 3 ; Cantidad de cuentas a mecionar por comentario
 global intervaloMinutos, intervaloSegundos, intervalo
-global totalComentarios := 6567 ; Cantidad de comentarios totales que tiene la publicación
+global totalComentarios := 7871 ; Cantidad de comentarios totales que tiene la publicación
 global tiempoRestante := 0
 global timerActivo := false
 global penalizacion := 0 ; Tiempo sumado por cada vez que te bloquean acciones (en minutos)
@@ -23,8 +23,8 @@ Gui, TimerGUI:Show, x40 y75 NoActivate, Timer Visual
 
 ; ///////////////////////////////////////// Set del Timer Inicial /////////////////////////////////////////
 Comenzar:
-    Random, intervaloMinutos, 2, 3 ; Entre x e y minutos
-    Random, intervaloSegundos, 0, 59
+    Random, intervaloMinutos, 0, 0 ; Entre x e y minutos
+    Random, intervaloSegundos, 5, 5
     intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000 + penalizacion * 60000
     tiempoRestante := intervalo // 1000
     timerActivo := true
@@ -64,7 +64,7 @@ If (cuentas != "") {
     }
 
     Sleep 500
-    MouseMove, 1254, 960 ; Coords del input text
+    MouseMove, 1246, 959 ; Coords del input text
     Sleep 200
     Click left
     Sleep 500
@@ -72,7 +72,7 @@ If (cuentas != "") {
     Sleep 500
     SendInput {Enter}
     Sleep 500
-    MouseClick, left, 1490, 961 ; Coords del boton publicar y publicación del comentario
+    MouseClick, left, 1487, 954 ; Coords del boton publicar y publicación del comentario
     Sleep 2000
     DetectarPopup()
 
@@ -178,17 +178,17 @@ DetectarPopup() {
     Y2 := 625
 
     ; Segunda área donde también podría aparecer el popup
-    X3 := 1554
-    Y3 := 966
-    X4 := 1656
-    Y4 := 1001
+    X3 := 1570
+    Y3 := 972
+    X4 := 1655
+    Y4 := 1000
 
     ; Color a buscar
     colorBuscar1 := 0x22333F
-    colorBuscar2 := 0xC3D1DD 
+    colorBuscar2 := 0xE0F1FF
 
     ; Buscar en la primera área
-    PixelSearch, foundX, foundY, X1, Y1, X2, Y2, colorBuscar1, 10, Fast RGB
+    PixelSearch, foundX, foundY, X1, Y1, X2, Y2, colorBuscar1, 1, Fast RGB
     if (ErrorLevel = 0) {
         TrayTip, Popup Detectado, Cambiando de cuenta (Área 1), 2
         penalizacion := penalizacion + 5
@@ -197,7 +197,7 @@ DetectarPopup() {
     }
 
     ; Buscar en la segunda área
-    PixelSearch, foundX, foundY, X3, Y3, X4, Y4, colorBuscar2, 10, Fast RGB
+    PixelSearch, foundX, foundY, X3, Y3, X4, Y4, colorBuscar2, 1, Fast RGB
     if (ErrorLevel = 0) {
         TrayTip, Popup Detectado, Cambiando de cuenta (Área 2), 2
         penalizacion := penalizacion + 5
