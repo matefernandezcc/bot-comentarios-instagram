@@ -4,12 +4,12 @@ EnvGet, userProfile, USERPROFILE
 SetWorkingDir, %A_ScriptDir%
 
 ; ///////////////////////////////////////// Variables de config globales /////////////////////////////////////////
-global url := "PC-GAMER-2" ; URL / nombre del sorteo actual
-global contadorComentariosHechos := 1 ; Comentarios YA hechos
+global url := "https://www.instagram.com/p/DNhDv60tjd2/?img_index=1" ; URL / nombre del sorteo actual
+global contadorComentariosHechos := 29 ; Comentarios YA hechos
 global limiteDiario := 500 ; Cantidad máxima de comentarios a enviar
 global cantMenciones := 3 ; Cantidad de cuentas a mecionar por comentario
 global intervaloMinutos, intervaloSegundos, intervalo
-global totalComentarios := 6568 ; Cantidad de comentarios totales que tiene la publicación
+global totalComentarios := 241 ; Cantidad de comentarios totales que tiene la publicación
 global tiempoRestante := 0
 global timerActivo := false
 global penalizacion := 0 ; Tiempo sumado por cada vez que te bloquean acciones (en minutos)
@@ -72,7 +72,7 @@ If (cuentas != "") {
     Sleep 500
     SendInput {Enter}
     Sleep 500
-    MouseClick, left, 1490, 961 ; Coords del boton publicar y publicación del comentario
+    MouseClick, left, 1414, 958 ; Coords del boton publicar y publicación del comentario
     Sleep 2000
     DetectarPopup()
 
@@ -84,7 +84,7 @@ If (cuentas != "") {
     GuardarChances(contadorComentariosHechos, probabilidad)
 
     ; /////////////////////// Nuevo timer random ///////////////////////
-    Random, intervaloMinutos, 4, 5 
+    Random, intervaloMinutos, 2, 3 
     Random, intervaloSegundos, 0, 59
     intervalo := intervaloMinutos * 60000 + intervaloSegundos * 1000 + penalizacion * 60000
     tiempoRestante := intervalo // 1000
